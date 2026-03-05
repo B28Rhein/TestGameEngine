@@ -1,6 +1,6 @@
 #include "Game.h"
 
-std::shared_ptr<Game> Game::Instance = nullptr;
+std::unique_ptr<Game> Game::Instance = nullptr;
 
 int Game::CreateWindow(int width, int height, char* title)
 {
@@ -23,12 +23,12 @@ Game::Game()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-std::shared_ptr<Game> Game::GetInstance()
+Game* Game::GetInstance()
 {
 	if (Instance == nullptr) {
-		Instance = std::shared_ptr<Game>(new Game);
+		Instance = std::make_unique<Game>();
 	}
-	return Game::Instance;
+	return Game::Instance.get();
 }
 
 void Game::ResetInstance()
@@ -38,14 +38,14 @@ void Game::ResetInstance()
 
 void Game::CreateNewScene(std::string name)
 {
-	std::shared_ptr<Entry<Scene>> e = std::shared_ptr<Entry<Scene>>(new Entry<Scene>(name, std::shared_ptr<Scene>(new Scene())));
-	Scenes.push_back(e);
+	//std::unique_ptr<Entry<Scene>> e = std::unique_ptr<Entry<Scene>>(new Entry<Scene>(name, std::shared_ptr<Scene>(new Scene())));
+	Scenes.push_back(std::make_unique<Entry<Scene>>(name, std::make_shared<Scene>()));
 }
 
 void Game::SetCurrentScene(std::string name)
 {
-	std::shared_ptr<Entry<Scene>> s = GetSceneByName(name);
-	if (s->Object == nullptr) {
+	Scene* s = SceneGetSceneByName(name);
+	if (s == nullptr) {
 		std::cout << "Scene with name " << name << " not found\n";
 		return;
 	}
@@ -62,6 +62,9 @@ int Game::Run()
 		//input
 		processInput();
 		//end input
+		auto go = this->currentScene->GetObjectByName("cube2");
+		TransformComponent* tc = go->GetComponent<TransformComponent>();
+		tc->ChangeRotBy(glm::vec3(1, 1, 1));
 		//rendering
 
 		renderer->Render();
@@ -73,17 +76,17 @@ int Game::Run()
 
 }
 
-std::shared_ptr<Entry<Scene>> Game::GetSceneByName(std::string name)
+Scene* Game::SceneGetSceneByName(std::string name)
 {
-	for (auto s : Scenes) {
-		if (s->name == name) {
-			return s;
+	for (int i = 0; i < Scenes.size(); i++) {
+		if (Scenes[i]->name == name) {
+			return Scenes[i]->Object.get();
 		}
 	}
-	return std::shared_ptr<Entry<Scene>>(new Entry<Scene>("Not Found", nullptr));
+	return nullptr;
 }
 
-std::shared_ptr<Entry<Scene>> Game::GetCurrentScene()
+Scene* Game::GetCurrentScene()
 {
 	return currentScene;
 }
@@ -169,16 +172,75 @@ void Game::processInput()
 		glfwGetKey(window, GLFW_KEY_A) * 0b00100 +
 		glfwGetKey(window, GLFW_KEY_D) * 0b01000 +
 		glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) * 0b10000;
-	renderer->getSelectedCamera()->moveCamera(direction, deltaTime);
+	moveCamera(direction, deltaTime);
+}
+
+void Game::moveCamera(int direction, float deltaTime)
+{
+	CameraComponent* cc = selectedCamera->GetComponent<CameraComponent>();
+	glm::vec3 front = cc->getFront();
+	glm::vec3 up = cc->getUpVector();
+
+	glm::vec3 moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
+	moveVector += front * (float)(direction % 2);
+	direction >>= 1;
+	moveVector -= front * (float)(direction % 2);
+	direction >>= 1;
+	moveVector -= glm::normalize(glm::cross(front, up)) * (float)(direction % 2);
+	direction >>= 1;
+	moveVector += glm::normalize(glm::cross(front, up)) * (float)(direction % 2);
+	direction >>= 1;
+	float currentSpeed = 2 + 2 * direction;
+	if (moveVector != glm::vec3(0.0f))
+	{
+		moveVector = glm::normalize(moveVector) * currentSpeed * deltaTime;
+		selectedCamera->GetComponent<TransformComponent>()->ChangePosBy(moveVector);
+	}
+}
+
+void Game::rotateCamera(float xOffset, float yOffset)
+{
+	xOffset *= 0.1;
+	yOffset *= 0.1;
+
+	CameraComponent* cc = selectedCamera->GetComponent<CameraComponent>();
+	glm::vec3 front = cc->getFront();
+	glm::vec3 pyr = cc->getPitchYawRoll();
+	float yaw = pyr.y;
+	float pitch = pyr.x;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cc->setFront(glm::normalize(direction));
+	cc->setPitchYawRoll(pitch, yaw, pyr.z);
 }
 
 void Game::SelectCamera(std::string name)
 {
-	renderer->SelectCameraByName(name);
+	GameObject* go = GetObjectByName(name);
+	CameraComponent* cc = go->GetComponent<CameraComponent>();
+	if (cc != nullptr) {
+		selectedCamera = go;
+	}
 }
 
-AbstractCamera* Game::getSelectedCamera()
+GameObject* Game::getSelectedCamera()
 {
-	return renderer->getSelectedCamera();
+	return selectedCamera;
+}
+
+GameObject* Game::GetObjectByName(std::string name)
+{
+	return currentScene->GetObjectByName(name);
 }
 

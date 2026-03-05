@@ -1,4 +1,5 @@
-﻿#include <glad/glad.h>
+﻿#define GLM_ENABLE_EXPERIMENTAL
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,9 +12,7 @@
 #include "Window.h"
 #include "Texture.h"
 #include "GameObject.h"
-#include "Camera.h"
 #include "Renderer3D.h"
-#include "Renderer2D.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -111,38 +110,57 @@ int main()
 
 	g->CreateNewScene("Scene1");
 	g->SetCurrentScene("Scene1");
-	auto currentScene = g->GetCurrentScene()->Object;
+	auto currentScene = g->GetCurrentScene();
 	g->setRenderer<Renderer3D>(true);
 
 	std::pair<int, int> WindowSize = g->getWindowSize();
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	Camera* tmp = new Camera(1.5f, 0.1f, cameraPos, cameraFront, cameraUp, CameraMode::Flying3DCamera, WindowSize);
-	currentScene->AddObject(std::shared_ptr<GameObject>(tmp), "camera1");
+	//Camera* tmp = new Camera(1.5f, 0.1f, cameraPos, cameraFront, cameraUp, CameraMode::Flying3DCamera, WindowSize);
+	Shader* shader = new Shader("default.vs", "default.frs");
+
+	GameObject* camera = new GameObject(0, 0, 0);
+	camera->AddComponent<MeshComponent>();
+
+	camera->AddComponent<CameraComponent>();
+	camera->GetComponent<CameraComponent>()->setFront(cameraFront);
+	camera->GetComponent<CameraComponent>()->setUpVector(cameraUp);
+	camera->GetComponent<CameraComponent>()->setOffset(glm::vec3(0,0,0));
+	camera->GetComponent<MeshComponent>()->setMesh(cubeVerts);
+	camera->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
+	camera->GetComponent<MeshComponent>()->setShader(shader);
+	currentScene->AddObject(std::shared_ptr<GameObject>(camera), "camera1");
 	g->SelectCamera("camera1");
 
 
 	g->BindEvent(EventType::mouseCallback, mouse_callback);
 
-	Shader* shader = new Shader("default.vs", "default.frs");
 
 	std::shared_ptr<GameObject> p = std::shared_ptr<GameObject>(new GameObject(0, -1, 0));
 	p->AddComponent<MeshComponent>();
 	p->GetComponent<MeshComponent>()->setMesh(cubeVerts);
 	p->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
 	p->GetComponent<MeshComponent>()->setShader(shader);
-	p->GetComponent<MeshComponent>()->setScale(glm::vec3(1000, 1, 1000));
-	currentScene->AddObject(p, "plane1");
-	std::shared_ptr<GameObject> go = std::shared_ptr<GameObject>(new GameObject(5, 5, 5));
+	p->GetComponent<TransformComponent>()->SetScale(glm::vec3(1000, 1, 1000));
+	std::shared_ptr<GameObject> go = std::shared_ptr<GameObject>(new GameObject(5, 0, 0));
 	go->AddComponent<MeshComponent>();
 	go->GetComponent<MeshComponent>()->setMesh(cubeVerts);
 	go->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
 	go->GetComponent<MeshComponent>()->setShader(shader);
-	go->GetComponent<MeshComponent>()->setScale(glm::vec3(1, 1, 1));
-	go->GetComponent<MeshComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.3);
+	go->GetComponent<TransformComponent>()->SetScale(glm::vec3(1, 1, 1));
+	go->GetComponent<MeshComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
+	std::shared_ptr<GameObject> go2 = std::shared_ptr<GameObject>(new GameObject(0, 0, 0));
+	go2->AddComponent<MeshComponent>();
+	go2->GetComponent<MeshComponent>()->setMesh(cubeVerts);
+	go2->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
+	go2->GetComponent<MeshComponent>()->setShader(shader);
+	go2->GetComponent<TransformComponent>()->SetScale(glm::vec3(1, 1, 1));
+	go2->GetComponent<MeshComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
 	currentScene->AddObject(go, "cube1");
-	
+	currentScene->AddObject(go2, "cube2");
+	currentScene->AddObject(p, "plane1");
+
 	//currentScene->AddObject(p, "plane1");
 
 
@@ -155,9 +173,8 @@ int main()
 	//delete texture1;
 	delete shader;
 	glfwTerminate();
-	currentScene->GetObjectByName("cube1").Object->removeChild("plane1");
+	currentScene->GetObjectByName("cube1")->removeChild("plane1");
 	p = nullptr;
-	auto l = currentScene->GetObjectByName("cube1").Object->getPos();
 	go = nullptr;
 	currentScene->RemoveObject("cube1");
 	return 0;
@@ -179,7 +196,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-	g->getSelectedCamera()->rotateCamera(xoffset, yoffset);
+	g->rotateCamera(xoffset, yoffset);
 }
 
 

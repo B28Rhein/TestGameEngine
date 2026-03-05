@@ -1,6 +1,23 @@
 #include "Game.h"
 
 
+std::vector<GameObject*> Scene::collapseTree(GameObject* go)
+{
+	std::vector<GameObject*> tree = std::vector<GameObject*>();
+	if (go->getChildren().size() == 0) {
+		return tree;
+	}
+	for (auto ch : go->getChildren())
+	{
+		tree.push_back(ch.Object.get());
+		std::vector<GameObject*> t = collapseTree(ch.Object.get());
+		for (auto c : t) {
+			tree.push_back(c);
+		}
+	}
+	return tree;
+}
+
 Scene::Scene()
 {
 }
@@ -16,7 +33,7 @@ void Scene::AddObject(std::shared_ptr<GameObject> go, std::string name)
 	Objects.emplace_back(newName, go);
 }
 
-Entry<GameObject> Scene::GetObjectByName(std::string name)
+GameObject* Scene::GetObjectByName(std::string name)
 {
 	std::queue<Entry<GameObject>> q;
 	for (auto& ge : Objects) {
@@ -24,7 +41,7 @@ Entry<GameObject> Scene::GetObjectByName(std::string name)
 	}
 	do {
 		if (q.front().name == name) {
-			return q.front();
+			return q.front().Object.get();
 		}
 		auto go = q.front().Object;
 		q.pop();
@@ -32,7 +49,7 @@ Entry<GameObject> Scene::GetObjectByName(std::string name)
 			q.push(c);
 		}
 	} while (!q.empty());
-	return Entry<GameObject>("notfound", nullptr);
+	return nullptr;
 }
 
 std::vector<Entry<GameObject>>* Scene::GetObjects()
@@ -40,9 +57,22 @@ std::vector<Entry<GameObject>>* Scene::GetObjects()
 	return &Objects;
 }
 
+std::vector<GameObject*> Scene::GetCollapsedObjectTree()
+{
+	std::vector<GameObject*> tree = std::vector<GameObject*>();
+	for (auto go : Objects) {
+		tree.push_back(go.Object.get());
+		std::vector<GameObject*> t = collapseTree(go.Object.get());
+		for (auto c : t) {
+			tree.push_back(c);
+		}
+	}
+	return tree;
+}
+
 void Scene::RemoveObject(std::string name)
 {
-	if (GetObjectByName(name).Object != nullptr) {
+	if (GetObjectByName(name) != nullptr) {
 		for (int i = 0; i < Objects.size(); i++) {
 			if (Objects[i].name == name) {
 				Objects.erase(Objects.begin() + i);

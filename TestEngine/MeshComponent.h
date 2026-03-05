@@ -1,4 +1,5 @@
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/fwd.hpp>
 #include <vector>
 
@@ -18,17 +19,19 @@ class MeshComponent : public Component
 {
 	unsigned int VAO, VBO, EBO;
 	glm::vec4 TexMod;
-	glm::mat4 getModel(glm::vec3 pos);
 public:
 	MeshComponent();
 	MeshComponent(GameObject* go);
 	MeshComponent(Shader* _shader, std::string texPath, glm::vec4 _TexMod = glm::vec4(1, 1, 1, 1));
 	void AssignTexture(std::string texPath);
-	void setScale(glm::vec3 nScale);
 	void setTexMod(glm::vec3 Colour, float alpha);
+	glm::vec4 getTexMod();
 	void setMesh(float* verts);
 	void setShader(Shader* shader);
-	virtual void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 pos);
+	Shader* getShader();
+	Texture* getTexture();
+	std::vector<Vertex>* GetVerices();
+	unsigned int GetVAO();
 	~MeshComponent();
 
 protected:
@@ -36,6 +39,5 @@ protected:
 	Texture* texture;
 	void setupBuffers();
 	Shader* shader;
-	glm::vec3 scale;
 };
 

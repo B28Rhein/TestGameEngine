@@ -5,8 +5,8 @@ class GameObject;
 class Component
 {
 protected:
-	GameObject* gameObject;
 public:
+	GameObject* gameObject;
 	Component(GameObject* go);
 	virtual ~Component();
 };

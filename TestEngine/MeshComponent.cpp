@@ -5,7 +5,6 @@ MeshComponent::MeshComponent() : Component(nullptr)
 {
 	texture = nullptr;
 	shader = nullptr;
-	scale = glm::vec3(1, 1, 1);
 	TexMod = glm::vec4(1, 1, 1, 1);
 }
 
@@ -13,14 +12,12 @@ MeshComponent::MeshComponent(GameObject* go) : Component(go)
 {
 	texture = nullptr;
 	shader = nullptr;
-	scale = glm::vec3(1, 1, 1);
 	TexMod = glm::vec4(1, 1, 1, 1);
 }
 
 MeshComponent::MeshComponent(Shader* _shader, std::string texPath, glm::vec4 _TexMod) : Component(nullptr){
 	texture = new Texture(texPath);
 	shader = _shader;
-	scale = glm::vec3(1, 1, 1);
 	TexMod = _TexMod;
 }
 
@@ -44,34 +41,22 @@ void MeshComponent::setupBuffers()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 }
 
-
-
-glm::mat4 MeshComponent::getModel(glm::vec3 pos)
-{
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, pos);
-	model = glm::scale(model, scale);
-	shader->use();
-	return model;
-}
-
 void MeshComponent::AssignTexture(std::string texPath)
 {
 	if (texture != nullptr) {
 		texture->~Texture();
 	}
 	texture = new Texture(texPath);
-	std::cout << gameObject->getPos().x;
-}
-
-void MeshComponent::setScale(glm::vec3 nScale) {
-	scale = nScale;
-
 }
 
 void MeshComponent::setTexMod(glm::vec3 Colour, float alpha)
 {
 	TexMod = glm::vec4(Colour, alpha);
+}
+
+glm::vec4 MeshComponent::getTexMod()
+{
+	return TexMod;
 }
 
 void MeshComponent::setMesh(float* verts)
@@ -87,23 +72,24 @@ void MeshComponent::setShader(Shader* shader)
 	this->shader = shader;
 }
 
-void MeshComponent::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 pos)
+Shader* MeshComponent::getShader()
 {
-	shader->use();
-	glm::mat4 model = this->getModel(pos);
+	return shader;
+}
 
-	shader->setMat4("projection", projection);
-	shader->setMat4("view", view);
-	shader->setMat4("model", model);
+Texture* MeshComponent::getTexture()
+{
+	return texture;
+}
 
-	shader->setVec4("FragMod", TexMod);
+std::vector<Vertex>* MeshComponent::GetVerices()
+{
+	return &vertices;
+}
 
-	glActiveTexture(GL_TEXTURE0);
-	shader->setInt("tex", 0);
-	glBindTexture(GL_TEXTURE_2D, texture->ID);
-
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+unsigned int MeshComponent::GetVAO()
+{
+	return VAO;
 }
 
 MeshComponent::~MeshComponent()

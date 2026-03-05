@@ -7,6 +7,8 @@
 #include "Entry.h"
 #include "Component.h"
 #include "MeshComponent.h"
+#include "TransformComponent.h"
+
 
 class GameObject
 {
@@ -19,11 +21,8 @@ public:
 	std::vector<Entry<GameObject>> getChildren();
 	GameObject* getParent();
 	virtual ~GameObject();
-	virtual void Draw(glm::mat4 view, glm::mat4 projection);
-	glm::vec3 getPos();
 	bool IsOfName(std::string name);
-	void moveToPosition(glm::vec3 position);
-	void moveToPosition(float X, float Y, float Z);
+
 	template<class T>
 	T* GetComponent() {
 		for (auto c : components) {
@@ -33,6 +32,7 @@ public:
 		}
 		return nullptr;
 	};
+
 	template<class T>
 	void AddComponent() {
 		if (GetComponent<T>() == nullptr) {
@@ -42,8 +42,8 @@ public:
 			std::cout << "Component of this type is already present\n";
 		}
 	}
+
 protected:
-	glm::vec3 pos;
 	std::vector<Entry<GameObject>> children;
 	std::vector<std::shared_ptr<Component>> components;
 };

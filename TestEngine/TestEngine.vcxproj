@@ -132,40 +132,34 @@
   <ItemGroup>
     <ClCompile Include="AbstractCamera.cpp" />
     <ClCompile Include="AbstractRenderer.cpp" />
-    <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
-    <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Renderer3D.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamera.h" />
     <ClInclude Include="AbstractRenderer.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entry.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MeshComponent.h" />
-    <ClInclude Include="Renderer2D.h" />
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObject2D.h" />
     <ClInclude Include="Renderer3D.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

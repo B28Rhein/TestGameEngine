@@ -2,13 +2,16 @@
 
 GameObject::GameObject(float xpos, float ypos, float zpos)
 {
-	pos = glm::vec3(xpos, ypos, zpos);
+	auto pos = glm::vec3(xpos, ypos, zpos);
+	AddComponent<TransformComponent>();
+	GetComponent<TransformComponent>()->SetTransform(pos, glm::vec3(0), glm::vec3(1));
 	parent = nullptr;
 	children = std::vector<Entry<GameObject>>();
 }
 
 GameObject::GameObject(glm::vec3 nPos) {
-	pos = nPos;
+	AddComponent<TransformComponent>();
+	GetComponent<TransformComponent>()->SetTransform(nPos, glm::vec3(0), glm::vec3(1));
 	parent = nullptr;
 	children = std::vector<Entry<GameObject>>();
 }
@@ -48,37 +51,6 @@ GameObject* GameObject::getParent()
 
 GameObject::~GameObject()
 {
-}
-
-// TODO: MAKE POSITION OF CHILDREN RELATIVE TO POSITION OF PARENT
-void GameObject::moveToPosition(glm::vec3 position)
-{
-	for (auto& c : children) {
-		glm::vec3 vec = c.Object->pos - pos;
-		c.Object->pos = position + vec;
-	}
-	pos = position;
-}
-
-void GameObject::moveToPosition(float X, float Y, float Z)
-{
-	moveToPosition(glm::vec3(X, Y, Z));
-}
-
-void GameObject::Draw(glm::mat4 view, glm::mat4 projection) {
-	MeshComponent* MC = GetComponent<MeshComponent>();
-	if (MC != nullptr) {
-		MC->Draw(view, projection, pos);
-	}
-	for (auto& oe : children) {
-		auto c = oe.Object;
-		c->Draw(view, projection);
-	}
-}
-
-glm::vec3 GameObject::getPos()
-{
-	return pos;
 }
 
 bool GameObject::IsOfName(std::string name)

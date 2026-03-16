@@ -21,9 +21,12 @@ void Renderer3D::Render()
 	system("cls");
 	std::cout << glm::to_string(cameraPos) << " " << glm::to_string(tc->GetPos());
 	float cameraFov = cc->getFov();
-
+	glm::mat4 projection;
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	glm::mat4 projection = glm::perspective(cameraFov, (float)g->getWindowSize().first/(float)g->getWindowSize().second, 0.1f, 100.0f);
+	if (cc->getType() == CameraProjectionType::perspective)
+		projection = glm::perspective(cameraFov, (float)g->getWindowSize().first / (float)g->getWindowSize().second, 0.1f, 100.0f);
+	else if (cc->getType() == CameraProjectionType::ortho)
+		projection = glm::ortho(-((float)g->getWindowSize().first) / 2, ((float)g->getWindowSize().first) / 2, -((float)g->getWindowSize().second) / 2, ((float)g->getWindowSize().second) / 2);
 	auto objects = g->GetGameObjectsWithComponent<MeshComponent>();
 	auto predicate = [](GameObject* a, GameObject* b) {
 		float aAlpha = a->GetComponent<MeshComponent>()->getTexMod().a;

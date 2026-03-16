@@ -127,6 +127,7 @@ int main()
 	camera->GetComponent<CameraComponent>()->setFront(cameraFront);
 	camera->GetComponent<CameraComponent>()->setUpVector(cameraUp);
 	camera->GetComponent<CameraComponent>()->setOffset(glm::vec3(0,0,0));
+	camera->GetComponent<CameraComponent>()->setProjectionType(CameraProjectionType::perspective);
 	camera->GetComponent<MeshComponent>()->setMesh(cubeVerts);
 	camera->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
 	camera->GetComponent<MeshComponent>()->setShader(shader);

@@ -6,7 +6,6 @@
 #include <vector>
 #include "Entry.h"
 #include "Component.h"
-#include "MeshComponent.h"
 #include "TransformComponent.h"
 
 

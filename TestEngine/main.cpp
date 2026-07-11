@@ -13,9 +13,11 @@
 #include "Texture.h"
 #include "GameObject.h"
 #include "Renderer3D.h"
+#include "MeshComponent.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "TextureComponent.h"
 
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
@@ -122,15 +124,15 @@ int main()
 
 	GameObject* camera = new GameObject(0, 0, 0);
 	camera->AddComponent<MeshComponent>();
-
+	camera->AddComponent<TextureComponent>();
 	camera->AddComponent<CameraComponent>();
 	camera->GetComponent<CameraComponent>()->setFront(cameraFront);
 	camera->GetComponent<CameraComponent>()->setUpVector(cameraUp);
 	camera->GetComponent<CameraComponent>()->setOffset(glm::vec3(0,0,0));
 	camera->GetComponent<CameraComponent>()->setProjectionType(CameraProjectionType::perspective);
 	camera->GetComponent<MeshComponent>()->setMesh(cubeVerts);
-	camera->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
 	camera->GetComponent<MeshComponent>()->setShader(shader);
+	camera->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
 	currentScene->AddObject(std::shared_ptr<GameObject>(camera), "camera1");
 	g->SelectCamera("camera1");
 
@@ -140,30 +142,32 @@ int main()
 
 	std::shared_ptr<GameObject> p = std::shared_ptr<GameObject>(new GameObject(0, -1, 0));
 	p->AddComponent<MeshComponent>();
+	p->AddComponent<TextureComponent>();
 	p->GetComponent<MeshComponent>()->setMesh(cubeVerts);
-	p->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
+	p->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
 	p->GetComponent<MeshComponent>()->setShader(shader);
 	p->GetComponent<TransformComponent>()->SetScale(glm::vec3(1000, 1, 1000));
 	std::shared_ptr<GameObject> go = std::shared_ptr<GameObject>(new GameObject(5, 0, 0));
 	go->AddComponent<MeshComponent>();
+	go->AddComponent<TextureComponent>();
 	go->GetComponent<MeshComponent>()->setMesh(cubeVerts);
-	go->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
+	go->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
 	go->GetComponent<MeshComponent>()->setShader(shader);
 	go->GetComponent<TransformComponent>()->SetScale(glm::vec3(1, 1, 1));
-	go->GetComponent<MeshComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
+	go->GetComponent<TextureComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
 	std::shared_ptr<GameObject> go2 = std::shared_ptr<GameObject>(new GameObject(0, 0, 0));
 	go2->AddComponent<MeshComponent>();
+	go2->AddComponent<TextureComponent>();
 	go2->GetComponent<MeshComponent>()->setMesh(cubeVerts);
-	go2->GetComponent<MeshComponent>()->AssignTexture("testTexture.png");
+	go2->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
 	go2->GetComponent<MeshComponent>()->setShader(shader);
 	go2->GetComponent<TransformComponent>()->SetScale(glm::vec3(1, 1, 1));
-	go2->GetComponent<MeshComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
+	go2->GetComponent<TextureComponent>()->setTexMod(glm::vec3(1, 1, 1), 0.5);
 	currentScene->AddObject(go, "cube1");
 	currentScene->AddObject(go2, "cube2");
 	currentScene->AddObject(p, "plane1");
 
 	//currentScene->AddObject(p, "plane1");
-
 
 	g->Run();
 	

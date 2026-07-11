@@ -1,11 +1,9 @@
 finish Game class
 Change vector of objects to a vector of name/type/object and move renaming code to some global
-Maaaaaybe make renderer a singleton
-make component class and create stuff like transformations and drawing as components, could be used to remove Drawable class
-Remind myself how this codebase fully works, especially breakdown of class relations
-maybe try moving GameObject and 2D versions to different folders
 MAKE POSITION OF CHILDREN RELATIVE TO POSITION OF PARENT
 make abstract file manager class and some basic file managers something like scene to save how map looks
-maybe see if 2d even works
 sthing like tick system
 create collision detection but that's not a priority right now
+Finish SpriteComponent
+Something needs to be done with renderer
+Create sound stuff

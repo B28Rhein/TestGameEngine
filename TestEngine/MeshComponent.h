@@ -5,9 +5,11 @@
 
 #include "Texture.h"
 #include "Vertex.h"
-#include "Component.h"
+#include "DrawableComponent.h"
 #include "Shader.h"
 #include "GameObject.h"
+#include "RendererManager.h"
+#include "Renderer3D.h"
 
 enum verticesSetupMode
 {
@@ -15,28 +17,22 @@ enum verticesSetupMode
 	Custom,
 };
 
-class MeshComponent : public Component
+class MeshComponent : public DrawableComponent
 {
 	unsigned int VAO, VBO, EBO;
-	glm::vec4 TexMod;
 public:
 	MeshComponent();
 	MeshComponent(GameObject* go);
-	MeshComponent(Shader* _shader, std::string texPath, glm::vec4 _TexMod = glm::vec4(1, 1, 1, 1));
-	void AssignTexture(std::string texPath);
-	void setTexMod(glm::vec3 Colour, float alpha);
-	glm::vec4 getTexMod();
+	MeshComponent(Shader* _shader);
 	void setMesh(float* verts);
 	void setShader(Shader* shader);
 	Shader* getShader();
-	Texture* getTexture();
 	std::vector<Vertex>* GetVerices();
 	unsigned int GetVAO();
 	~MeshComponent();
 
 protected:
 	std::vector<Vertex> vertices;
-	Texture* texture;
 	void setupBuffers();
 	Shader* shader;
 };

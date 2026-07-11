@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include "GameObject.h"
+#include "RendererManager.h"
 
 class Scene
 {

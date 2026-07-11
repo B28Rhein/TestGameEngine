@@ -1,15 +1,22 @@
-#include "Renderer3D.h"
-#include "TextureComponent.h"
+#include "RendererManager.h"
 
-Renderer3D::Renderer3D(bool stbiFlipVert) : AbstractRenderer(stbiFlipVert)
+std::unique_ptr<RendererManager> RendererManager::Instance = nullptr;
+
+RendererManager::RendererManager()
 {
+	renderers = std::unordered_map<int, std::shared_ptr<AbstractRenderer>>();
 }
 
-void Renderer3D::Render()
+RendererManager* RendererManager::GetInstance()
 {
-	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	if (Instance == nullptr) {
+		Instance = std::make_unique<RendererManager>();
+	}
+	return RendererManager::Instance.get();
+}
 
+void RendererManager::Render()
+{
 	Game* g = Game::GetInstance();
 	GameObject* sCamera = g->getSelectedCamera();
 	CameraComponent* cc = sCamera->GetComponent<CameraComponent>();
@@ -30,11 +37,11 @@ void Renderer3D::Render()
 		projection = glm::ortho(-((float)g->getWindowSize().first) / 2, ((float)g->getWindowSize().first) / 2, -((float)g->getWindowSize().second) / 2, ((float)g->getWindowSize().second) / 2);
 	auto objects = g->GetGameObjectsWithComponent<DrawableComponent>();
 	auto predicate = [](GameObject* a, GameObject* b) {
-		
+
 		float aAlpha = a->GetComponent<TextureComponent>() != nullptr ? a->GetComponent<TextureComponent>()->getTexMod().a : 1;
 		float bAlpha = b->GetComponent<TextureComponent>() != nullptr ? b->GetComponent<TextureComponent>()->getTexMod().a : 1;
 		if (aAlpha != bAlpha) {
-			return aAlpha > bAlpha ;
+			return aAlpha > bAlpha;
 		}
 		else {
 			glm::vec3 cameraPos = Game::GetInstance()->getSelectedCamera()->GetComponent<TransformComponent>()->GetPos();
@@ -44,52 +51,11 @@ void Renderer3D::Render()
 			float bLen = glm::length(bPos - cameraPos);
 			return aLen > bLen;
 		}
-			
+
 		};
 	std::stable_sort(objects.begin(), objects.end(), predicate);
-	for (auto go : objects) {
-		MeshComponent* mc = go->GetComponent<MeshComponent>();
-		TextureComponent* tc = go->GetComponent<TextureComponent>();
-		glm::vec4 texMod = tc != nullptr ? tc->getTexMod() : glm::vec4(1, 1, 1, 1);
-		Shader* shader = mc->getShader();
-		shader->use();
-		glm::mat4 model = GetObjectsModel(go);
-
-		shader->setMat4("projection", projection);
-		shader->setMat4("view", view);
-		shader->setMat4("model", model);
-
-		shader->setVec4("FragMod", texMod);
-
-		if (tc == nullptr || tc->getTexture() == nullptr) {
-			shader->setInt("texAssigned", -1);
-		}
-		else
-		{
-			shader->setInt("texAssigned", 0);
-		}
-
-		glActiveTexture(GL_TEXTURE0);
-		shader->setInt("tex", 0);
-		glBindTexture(GL_TEXTURE_2D,
-			tc != nullptr ? tc->getTexture()->ID : -1
-		);
-
-		glBindVertexArray(mc->GetVAO());
-		glDrawArrays(GL_TRIANGLES, 0, mc->GetVerices()->size());
+	for (auto o : objects) {
+		int r = o->GetComponent<DrawableComponent>()->RendererId;
+		//renderers[r]->Render(o, view, projection);
 	}
-}
-
-glm::mat4 Renderer3D::GetObjectsModel(GameObject* go)
-{
-	TransformComponent* tc = go->GetComponent<TransformComponent>();
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, tc->GetPos());
-	glm::vec3 radianRot = tc->GetRot();
-	radianRot = glm::radians(radianRot);
-	glm::quat quaternion = glm::quat(radianRot);
-	glm::mat4 rotMat = glm::toMat4(quaternion);
-	model = model * rotMat;
-	model = glm::scale(model, tc->GetScale());
-	return model;
 }

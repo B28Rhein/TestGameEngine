@@ -1,24 +1,21 @@
 #include "MeshComponent.h"
 
 
-MeshComponent::MeshComponent() : Component(nullptr)
+
+
+MeshComponent::MeshComponent() : DrawableComponent(nullptr)
 {
-	texture = nullptr;
 	shader = nullptr;
-	TexMod = glm::vec4(1, 1, 1, 1);
 }
 
-MeshComponent::MeshComponent(GameObject* go) : Component(go)
+MeshComponent::MeshComponent(GameObject* go) : DrawableComponent(go)
 {
-	texture = nullptr;
 	shader = nullptr;
-	TexMod = glm::vec4(1, 1, 1, 1);
+	RendererId = RendererManager::GetInstance()->AddRenderer<Renderer3D>();
 }
 
-MeshComponent::MeshComponent(Shader* _shader, std::string texPath, glm::vec4 _TexMod) : Component(nullptr){
-	texture = new Texture(texPath);
+MeshComponent::MeshComponent(Shader* _shader) : DrawableComponent(nullptr){
 	shader = _shader;
-	TexMod = _TexMod;
 }
 
 
@@ -41,23 +38,6 @@ void MeshComponent::setupBuffers()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 }
 
-void MeshComponent::AssignTexture(std::string texPath)
-{
-	if (texture != nullptr) {
-		texture->~Texture();
-	}
-	texture = new Texture(texPath);
-}
-
-void MeshComponent::setTexMod(glm::vec3 Colour, float alpha)
-{
-	TexMod = glm::vec4(Colour, alpha);
-}
-
-glm::vec4 MeshComponent::getTexMod()
-{
-	return TexMod;
-}
 
 void MeshComponent::setMesh(float* verts)
 {
@@ -77,10 +57,6 @@ Shader* MeshComponent::getShader()
 	return shader;
 }
 
-Texture* MeshComponent::getTexture()
-{
-	return texture;
-}
 
 std::vector<Vertex>* MeshComponent::GetVerices()
 {

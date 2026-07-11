@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "Game.h"
 #include "AbstractRenderer.h"
+#include "MeshComponent.h"
 
 
 class Renderer3D : public AbstractRenderer

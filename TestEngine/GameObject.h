@@ -25,8 +25,9 @@ public:
 	template<class T>
 	T* GetComponent() {
 		for (auto c : components) {
-			if (typeid(*c).name() == typeid(T).name()) {
-				return (std::dynamic_pointer_cast<T>(c)).get();
+			std::shared_ptr<T> casted = std::dynamic_pointer_cast<T>(c);
+			if (casted != nullptr) {
+				return casted.get();
 			}
 		}
 		return nullptr;

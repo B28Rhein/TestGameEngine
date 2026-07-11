@@ -1,19 +1,18 @@
 #pragma once
 #define GLM_ENABLE_EXPERIMENTAL
-#include "Window.h"
 #include <vector>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include "GameObject.h"
-#include "Game.h"
 #include "AbstractRenderer.h"
-#include "MeshComponent.h"
-
-
-class Renderer3D : public AbstractRenderer
+#include "DrawableComponent.h"
+#include "SpriteComponent.h"
+#include "TextureComponent.h"
+#include "Game.h"
+class SpriteRenderer :
+    public AbstractRenderer
 {
 public:
-	Renderer3D(bool stbiFlipVert);
+	SpriteRenderer(bool stbiFlipVert);
 	void Render(GameObject*, glm::mat4 view, glm::mat4 projection);
 	glm::mat4 GetObjectsModel(GameObject* go);
 };

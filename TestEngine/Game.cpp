@@ -15,7 +15,7 @@ Game::Game()
 {
 	
 	CreateWindow(windowSize.first, windowSize.second, windowTitle);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glCullFace(GL_BACK);
@@ -67,7 +67,7 @@ int Game::Run()
 		tc->ChangeRotBy(glm::vec3(1, 1, 1));
 		//rendering
 
-		renderer->Render();
+		RendererManager::GetInstance()->Render();
 		window->RenderEnding();
 		//end rendering
 

@@ -11,6 +11,6 @@ class AbstractRenderer
 protected:
 public:
 	AbstractRenderer(bool stbiFlipVert);
-	virtual void Render() = 0;
+	virtual void Render(GameObject*, glm::mat4 view, glm::mat4 projection) = 0;
 };
 

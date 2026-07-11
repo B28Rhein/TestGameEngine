@@ -19,21 +19,17 @@ enum verticesSetupMode
 
 class MeshComponent : public DrawableComponent
 {
-	unsigned int VAO, VBO, EBO;
+
 public:
 	MeshComponent();
 	MeshComponent(GameObject* go);
 	MeshComponent(Shader* _shader);
 	void setMesh(float* verts);
-	void setShader(Shader* shader);
-	Shader* getShader();
-	std::vector<Vertex>* GetVerices();
-	unsigned int GetVAO();
 	~MeshComponent();
 
 protected:
-	std::vector<Vertex> vertices;
-	void setupBuffers();
-	Shader* shader;
+	
+	
+
 };
 

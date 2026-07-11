@@ -17,6 +17,8 @@ RendererManager* RendererManager::GetInstance()
 
 void RendererManager::Render()
 {
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	Game* g = Game::GetInstance();
 	GameObject* sCamera = g->getSelectedCamera();
 	CameraComponent* cc = sCamera->GetComponent<CameraComponent>();
@@ -26,8 +28,8 @@ void RendererManager::Render()
 	glm::vec3 cameraUp = cc->getUpVector();
 	glm::vec3 cameraOffset = cc->getOffset();
 	cameraPos += -glm::abs(cameraOffset.z) * cameraFront + cameraUp * cameraOffset.y + glm::cross(cameraFront, cameraUp) * cameraOffset.x;
-	system("cls");
-	std::cout << glm::to_string(cameraPos) << " " << glm::to_string(tc->GetPos());
+	//system("cls");
+	//std::cout << glm::to_string(cameraPos) << " " << glm::to_string(tc->GetPos());
 	float cameraFov = cc->getFov();
 	glm::mat4 projection;
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -56,6 +58,6 @@ void RendererManager::Render()
 	std::stable_sort(objects.begin(), objects.end(), predicate);
 	for (auto o : objects) {
 		int r = o->GetComponent<DrawableComponent>()->RendererId;
-		//renderers[r]->Render(o, view, projection);
+		renderers[r]->Render(o, view, projection);
 	}
 }

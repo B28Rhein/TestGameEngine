@@ -168,13 +168,32 @@ int main()
 	sp->AddComponent<SpriteComponent>();
 	sp->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
 	sp->GetComponent<SpriteComponent>()->setShader(shader);
-	sp->GetComponent<TransformComponent>()->SetScale(glm::vec3(10, 10, 10));
+	sp->GetComponent<SpriteComponent>()->SetCameraFollowing(true, true);
+	sp->GetComponent<TransformComponent>()->SetScale(glm::vec3(5, 5, 5));
 	sp->GetComponent<TextureComponent>()->setTexMod(glm::vec3(1, 1, 1), 1);
+	std::shared_ptr<GameObject> sp1 = std::shared_ptr<GameObject>(new GameObject(0, 0, -5));
+	sp1->AddComponent<SpriteComponent>();
+	sp1->AddComponent<TextureComponent>();
+	sp1->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
+	sp1->GetComponent<SpriteComponent>()->setShader(shader);
+	sp1->GetComponent<SpriteComponent>()->SetCameraFollowing(true, false);
+	sp1->GetComponent<TransformComponent>()->SetScale(glm::vec3(5, 5, 5));
+	sp1->GetComponent<TextureComponent>()->setTexMod(glm::vec3(1, 1, 1), 1);
+	std::shared_ptr<GameObject> sp2 = std::shared_ptr<GameObject>(new GameObject(-5, 0, 0));
+	sp2->AddComponent<TextureComponent>();
+	sp2->AddComponent<SpriteComponent>();
+	sp2->GetComponent<TextureComponent>()->AssignTexture("testTexture.png");
+	sp2->GetComponent<SpriteComponent>()->setShader(shader);
+	sp2->GetComponent<SpriteComponent>()->SetCameraFollowing(false, false);
+	sp2->GetComponent<TransformComponent>()->SetScale(glm::vec3(5, 5, 5));
+	sp2->GetComponent<TextureComponent>()->setTexMod(glm::vec3(1, 1, 1), 1);
 
 	currentScene->AddObject(go, "cube1");
 	currentScene->AddObject(go2, "cube2");
 	//currentScene->AddObject(p, "plane1");
 	currentScene->AddObject(sp, "sprite1");
+	currentScene->AddObject(sp1, "sprite2");
+	currentScene->AddObject(sp2, "sprite3");
 
 	//currentScene->AddObject(p, "plane1");
 

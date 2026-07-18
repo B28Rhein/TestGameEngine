@@ -31,3 +31,19 @@ SpriteComponent::SpriteComponent(GameObject * go) : DrawableComponent(go)
 	RendererId = RendererManager::GetInstance()->AddRenderer<SpriteRenderer>();
 	setGeometry();
 }
+
+void SpriteComponent::SetCameraFollowing(bool followCylindrically, bool AdditionalFollowingSphericaly)
+{
+	cameraFollowing = 0;
+	if (followCylindrically) {
+		cameraFollowing = 1;
+		if (AdditionalFollowingSphericaly) {
+			cameraFollowing += 2;
+		}
+	}
+}
+
+char SpriteComponent::GetCameraFollowing()
+{
+	return cameraFollowing;
+}
